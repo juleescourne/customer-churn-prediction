@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.spyproject/
+.DS_Store
+Thumbs.db
+
+# Local datasets and generated artifacts
+*.csv
+*.parquet
+*.json
+*.pkl
+*.joblib
+*.onnx
+
+# Keep placeholder/readme files in ignored data/model directories
+!data/**/.gitkeep
+!data/**/README.md
+!model/.gitkeep
+!model/README.md
