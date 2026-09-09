@@ -1,6 +1,24 @@
 # Customer Churn Prediction
 
+![XGBoost](https://img.shields.io/badge/model-XGBoost-EA6C00)
+![ROC-AUC 0.866](https://img.shields.io/badge/ROC--AUC-0.866-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+
 End-to-end machine-learning case study for identifying bank customers at risk of churn and translating model outputs into actionable retention priorities.
+
+> **Interactive demo (in-browser ONNX inference):**
+> [juleescourne.github.io/portfolio-data-analyst/#/churn](https://juleescourne.github.io/portfolio-data-analyst/#/churn)
+
+## The finding that shaped this project
+
+The dataset ships with a `complain` column that correlates with the target at **r = 1.00**.
+Kept in the feature set, it produces a model with ~99% accuracy that is completely useless:
+a complaint is registered *at or after* the moment a customer leaves, so the model would
+only be predicting the past.
+
+Notebook `02_exploratory_analysis.ipynb` identifies it and the column is dropped before any
+modelling. Every metric below is therefore lower than what this dataset can be made to
+show — deliberately.
 
 > **Context:** personal / academic machine-learning project built from a public Kaggle dataset. The goal is to demonstrate a complete data-science workflow rather than present a production banking system.
 
@@ -51,9 +69,15 @@ Business interpretation
 | Metric | Recorded result | Interpretation |
 | --- | ---: | --- |
 | ROC-AUC | **0.866** | Good discrimination between churn and non-churn customers |
-| Churn recall | **0.90** | Around 90% of churners are detected |
-| Churn precision | **~0.36** | More false positives are accepted to reduce missed churners |
+| Churn recall | **0.90** | The threshold was *selected* to reach this recall — see the caveat below |
+| Churn precision | **~0.36** | The price paid for that recall: about two contacts out of three are unnecessary |
 | Churn F1-score | **~0.51** | Reflects the deliberate recall-oriented trade-off |
+
+**Read the recall figure carefully.** It is not an independent result. The notebook picks
+the threshold by searching the precision/recall curve for `target_recall = 0.9`, so
+reporting 0.90 recall is close to a tautology. The number that carries information here is
+the **ROC-AUC of 0.866**, which is threshold-independent, and the precision of ~0.36 that
+the chosen operating point costs.
 
 The baseline model reached approximately **0.848 ROC-AUC** and **0.50 churn recall** before the recall-oriented optimization steps.
 
@@ -112,7 +136,10 @@ satisfaction_engagement
 │   ├── 02_exploratory_analysis.ipynb
 │   ├── 03_feature_engineering.ipynb
 │   └── 04_modeling.ipynb
+├── scripts/
+│   └── export_demo_artifacts.py
 ├── .gitignore
+├── LICENSE
 ├── README.md
 └── requirements.txt
 ```
@@ -218,13 +245,33 @@ data/raw/Customer-Churn-Records.csv
 
 Each notebook generates the input required by the next step.
 
+## Artifacts for the browser demo
+
+The portfolio demo scores customers client-side and shows the SHAP contributions behind
+each prediction. SHAP cannot run in a browser, so both artifacts are produced offline by
+[`scripts/export_demo_artifacts.py`](scripts/export_demo_artifacts.py):
+
+| Artifact | Purpose |
+| --- | --- |
+| `xgb_churn_model.onnx` | the classifier, converted for `onnxruntime-web` |
+| `shap_lookup.json` | SHAP values pre-computed over the 21 216 scenarios the demo's controls can produce |
+
+```bash
+pip install -r requirements.txt shap onnxmltools onnxconverter-common
+python scripts/export_demo_artifacts.py
+```
+
+Both files are build outputs and are **not versioned here**: they are published to the
+portfolio repository's `assets` branch. The front-end rounds any input to the nearest
+grid point, so the displayed contributions are those of a neighbouring scenario rather
+than of the exact values typed by the visitor.
+
 ## Methodology note
 
 This repository is an exploratory portfolio project. In the recorded modeling notebook, threshold selection is performed using the evaluation sample to study the precision/recall trade-off. For a production-grade experiment, I would use a dedicated validation set or cross-validation for feature selection, hyperparameter tuning and threshold selection, and reserve a final untouched test set for unbiased reporting.
 
 Further improvements could include:
 
-- SHAP-based model interpretation;
 - probability calibration;
 - cost-sensitive threshold optimization using real retention/acquisition costs;
 - comparison with LightGBM and logistic-regression baselines;
