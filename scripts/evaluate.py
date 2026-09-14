@@ -24,7 +24,12 @@ def evaluate(path, output):
     required = FEATURES + ['Exited']
     if not set(required) <= set(df): raise ValueError('Expected original bank churn columns')
     if not df.Exited.isin([0, 1]).all(): raise ValueError('Exited must be binary and complete')
-    if 'CustomerId' in df and df.CustomerId.duplicated().any(): raise ValueError('Duplicate customers')
+    if df.Exited.nunique() != 2: raise ValueError('Both target classes are required')
+    if 'CustomerId' in df and (df.CustomerId.isna().any() or df.CustomerId.duplicated().any()):
+        raise ValueError('CustomerId must be unique and complete')
+    for column in [c for c in FEATURES if c not in ['Geography', 'Gender']]:
+        df[column] = pd.to_numeric(df[column], errors='raise')
+        if np.isinf(df[column]).any(): raise ValueError(f'Infinite values in {column}')
     X, y = df[FEATURES], df.Exited
     trainval, test = train_test_split(np.arange(len(df)), test_size=.2, stratify=y, random_state=42)
     train, validation = train_test_split(trainval, test_size=.25, stratify=y.iloc[trainval], random_state=42)

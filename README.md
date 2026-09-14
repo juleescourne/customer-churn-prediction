@@ -40,6 +40,16 @@ réclamation** : il diffère du fichier enrichi exploré dans les anciens notebo
 Les anciennes et nouvelles métriques ne mesurent pas le même protocole.
 Le dataset n'est pas redistribué.
 
+## Vérification automatisée
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+La CI exécute le script sur un petit jeu synthétique : elle vérifie les contrats
+d’entrée et la cohérence du protocole, sans téléchargement Kaggle. Ces tests ne
+recalculent pas les scores du rapport sur les données publiques.
+
 ## Protocole
 
 - Découpage stratifié 60/20/20, graine 42.

@@ -42,16 +42,9 @@ Taux de départ par variable, corrélations, identification des segments à risq
 complain : (r=1.00) => data leakage
 ```
 
-La colonne `complain` est corrélée à **1,00** avec la cible. Une réclamation étant
-enregistrée au moment du départ, ou après, elle n'est pas disponible à l'instant où
-la prédiction serait utile. Conservée, elle donne un modèle à 99 % de justesse et
-sans aucune valeur opérationnelle.
+Dans le fichier enrichi historique, `complain` présente une corrélation arrondie à 1,00 avec la cible. C’est un signal de fuite potentielle, pas une preuve de chronologie : le dépôt ne fournit pas l’horodatage des réclamations. La variable est exclue par prudence. Le fichier brut de l’évaluation de référence ne la contient pas.
 
-Elle est retirée, ainsi que trois autres variables intégrées ailleurs.
-
-> **À retenir :** une corrélation de 1,00 avec la cible n'est jamais une bonne
-> nouvelle. C'est le signal qu'une information postérieure au fait s'est glissée
-> dans le jeu.
+Pour conclure à une fuite temporelle, il faudrait vérifier la définition, la provenance et la disponibilité de cette variable à l’instant de prédiction.
 
 ---
 
@@ -87,12 +80,11 @@ pondération des classes, choix du seuil.
 
 ![Compromis précision / rappel](assets/precision_recall_threshold.png)
 
-Perdre un client coûte plus cher que contacter inutilement un client fidèle. Le
-seuil est donc déplacé pour privilégier le rappel.
+L’exploration fait l’hypothèse qu’un départ manqué coûte plus qu’un contact inutile et privilégie le rappel. Aucun coût métier n’a été fourni pour valider cette hypothèse.
 
 | Métrique | Valeur | Comment la lire |
 | --- | ---: | --- |
-| **ROC-AUC** | **0,866** | **la seule indépendante du seuil — c'est elle qui porte l'information** |
+| **ROC-AUC** | **0,866** | mesure de classement indépendante du seuil ; elle ne décrit ni la calibration ni le coût métier |
 | Rappel churn | 0,90 | le seuil a été *choisi* pour l'atteindre : ce n'est pas un résultat indépendant |
 | Précision churn | ≈ 0,36 | environ deux contacts sur trois seront inutiles |
 | F1 churn | ≈ 0,51 | reflète le compromis assumé |
@@ -103,10 +95,7 @@ Le notebook cherche le point de la courbe où le rappel vaut 0,9, puis rapporte
 0,90 de rappel. **C'est une tautologie.** La question utile n'est pas « quel rappel
 atteint-on ? » mais « à quel prix ? » — et la réponse est : 36 % de précision.
 
-Formulé côté métier : pour capter 9 clients à risque sur 10, l'équipe rétention
-contacte environ 2,8 clients pour chaque départ réellement évité. Le seuil est
-justifié si le coût d'un contact vaut moins d'un tiers de la valeur d'un client
-retenu.
+Avec une précision exploratoire de 36 %, environ 2,8 alertes correspondent à un départ observé. Cela ne mesure aucun départ évité. Pour choisir un seuil économique, il faut connaître le coût de contact, la valeur d’une rétention et l’effet incrémental d’une campagne, mesuré avec un groupe témoin.
 
 ---
 
@@ -119,7 +108,7 @@ Variables les plus prédictives du modèle réduit :
 | `product_1_inactive` | client à produit unique et inactif — le signal le plus fort |
 | `num_of_products` | le risque varie fortement selon le nombre de produits |
 | `product_1_AND_germany` | l'effet du produit unique est amplifié en Allemagne |
-| `product_engagement_score` | l'engagement protège |
+| `product_engagement_score` | association avec un taux de départ plus faible dans ce jeu |
 | `age` | le risque n'est pas linéaire en l'âge |
 
 Ces variables décrivent des **associations** dans ce jeu de données. Elles ne
