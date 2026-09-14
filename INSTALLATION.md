@@ -1,3 +1,7 @@
+> **Évaluation de référence :** `scripts/evaluate.py`, exécuté sur les données brutes.
+> Voir le [rapport](reports/evaluation.json) et le [README](README.md). Les notebooks
+> et résultats décrits ci-dessous concernent l’exploration historique.
+
 # Installation
 
 Temps nécessaire : **5 minutes**, hors téléchargement du jeu de données Kaggle.
@@ -6,7 +10,7 @@ Temps nécessaire : **5 minutes**, hors téléchargement du jeu de données Kagg
 
 | Outil | Version | Vérifier |
 | --- | --- | --- |
-| Python | 3.11 ou supérieur | `python --version` |
+| Python | 3.12 ou supérieur (évaluation de référence) | `python --version` |
 | Compte Kaggle | gratuit | pour télécharger le jeu de données |
 
 ---
@@ -26,21 +30,22 @@ source .venv/bin/activate          # .\.venv\Scripts\Activate.ps1 sous Windows
 pip install -r requirements.txt
 ```
 
-## 3. Télécharger le jeu de données
+## 3. Choisir le bon fichier source
 
-Le dataset n'est pas redistribué ici (licence Kaggle).
+Pour **l’évaluation de référence**, installer `requirements-eval.txt`, télécharger
+[Bank Customer Churn](https://www.kaggle.com/datasets/kartiksaini18/churn-bank-customer),
+puis placer `Churn_Modelling.csv` à `data/raw/Customer-Churn-Records.csv`.
+Ce fichier compte 10 000 lignes et **14 colonnes**. Exécuter :
 
-<https://www.kaggle.com/datasets/kartiksaini18/churn-bank-customer>
-
-Placez le fichier téléchargé à cet emplacement exact :
-
-```text
-data/raw/Customer-Churn-Records.csv
+```bash
+python scripts/evaluate.py --data data/raw/Customer-Churn-Records.csv
 ```
 
-10 000 clients, 18 colonnes.
+Les notebooks historiques ci-dessous attendent un **fichier enrichi à 18 colonnes**.
+Sa provenance exacte reste à confirmer : le téléchargement ci-dessus ne permet
+pas de rejouer ces notebooks à l’identique. Ne pas fabriquer les colonnes manquantes.
 
-## 4. Exécuter les notebooks
+## 4. Exploration historique — uniquement avec le fichier enrichi
 
 ```bash
 jupyter notebook

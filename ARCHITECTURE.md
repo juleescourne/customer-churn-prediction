@@ -1,3 +1,7 @@
+> **Évaluation de référence :** `scripts/evaluate.py`, exécuté sur les données brutes.
+> Voir le [rapport](reports/evaluation.json) et le [README](README.md). Les notebooks
+> et résultats décrits ci-dessous concernent l’exploration historique.
+
 # Architecture et spécifications techniques
 
 Ce document décrit la chaîne de traitement, les variables construites, la stratégie
@@ -18,36 +22,20 @@ flowchart LR
     G --> H[ONNX + table SHAP<br/>pour la demo navigateur]
 ```
 
-Chaque notebook écrit le fichier consommé par le suivant : la chaîne est
-reproductible en les exécutant dans l'ordre.
+Chaque notebook écrit le fichier consommé par le suivant. Leur réexécution nécessite le fichier enrichi historique : le CSV brut à 14 colonnes ne le remplace pas.
 
 ---
 
-## 2. La fuite de données, et pourquoi elle domine tout le reste
+## 2. Variable suspecte dans le fichier historique
 
-Le jeu contient une colonne `complain` **corrélée à 1,00 avec la cible**.
+La corrélation de `complain` avec la cible est arrondie à 1,00 dans l’exploration.
+Ce quasi-doublon justifie une investigation et son exclusion prudente. La corrélation
+seule ne prouve ni une saisie après le départ ni la disponibilité au moment de prédire.
+Il faudrait le dictionnaire et l’historique des événements pour conclure.
 
-```
-complain : (r=1.00) => data leakage
-```
-
-### Pourquoi c'est une fuite et non un bon prédicteur
-
-Une réclamation est enregistrée **au moment où, ou après que**, le client part. La
-variable n'est pas disponible à l'instant où l'on voudrait prédire le départ : le
-modèle « prédirait » le passé.
-
-Conservée, elle produit un modèle à ~99 % de justesse, parfaitement inutile en
-production. C'est le piège classique de ce jeu Kaggle.
-
-### Comment la détecter
-
-Une matrice de corrélation avec la cible suffit. Une corrélation de 1,00 avec la
-variable à prédire n'est jamais une bonne nouvelle : c'est le signal qu'une
-information postérieure au fait s'est glissée dans les données.
-
-**Toutes les métriques de ce dépôt sont donc plus basses que ce que ce jeu de
-données peut afficher. C'est volontaire.**
+Le script de référence utilise un fichier brut à 14 colonnes, sans `complain`.
+Il n’exploite que les dix prédicteurs explicitement listés dans `scripts/evaluate.py`.
+Les notebooks à 18 colonnes et l’évaluation actuelle sont deux parcours distincts.
 
 ---
 
