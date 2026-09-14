@@ -26,6 +26,8 @@ du contact et efficacité d'une campagne doivent être mesurés, avec groupe té
 
 ## Reproduire
 
+Python **3.12 ou supérieur** est nécessaire pour les versions figées dans `requirements-eval.txt`.
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
