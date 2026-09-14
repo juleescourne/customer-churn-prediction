@@ -42,8 +42,12 @@ python scripts/evaluate.py --data data/raw/Customer-Churn-Records.csv
 ```
 
 Les notebooks historiques ci-dessous attendent un **fichier enrichi à 18 colonnes**.
-Sa provenance exacte reste à confirmer : le téléchargement ci-dessus ne permet
-pas de rejouer ces notebooks à l’identique. Ne pas fabriquer les colonnes manquantes.
+Il provient de [Bank Customer Churn — Radheshyam Kollipara](https://www.kaggle.com/datasets/radheshyamkollipara/bank-customer-churn).
+L’archive contient `Customer-Churn-Records.csv` (10 000 lignes, 18 colonnes).
+Pour les notebooks, placer ce fichier dans `data/raw/Customer-Churn-Records.csv`.
+Les deux parcours utilisent le même chemin par défaut : conserver les téléchargements
+séparément et choisir explicitement la source avant une exécution. La vérification
+de l’archive ne signifie pas que tous les notebooks ont été réexécutés.
 
 ## 4. Exploration historique — uniquement avec le fichier enrichi
 

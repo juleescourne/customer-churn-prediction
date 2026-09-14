@@ -69,6 +69,8 @@ ne sont pas attribués. Les anciens scores (AUC 0,866, rappel proche de 90 %)
 comportaient des biais de conception des variables et de sélection du seuil.
 Les notebooks sont conservés comme trace pédagogique.
 
+Source historique confirmée : [Bank Customer Churn — Radheshyam Kollipara](https://www.kaggle.com/datasets/radheshyamkollipara/bank-customer-churn), fichier `Customer-Churn-Records.csv` (10 000 lignes, 18 colonnes). Voir [le détail des deux sources](data/README.md). Les scores de référence ci-dessus restent ceux du fichier à 14 colonnes indiqué dans « Reproduire ».
+
 L'exploration a identifié une variable de réclamation presque identique à la cible.
 Cela motive son exclusion ; la corrélation seule ne prouve pas sa date d'enregistrement.
 
